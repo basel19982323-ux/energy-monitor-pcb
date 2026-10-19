@@ -52,7 +52,7 @@ idf.py set-target esp32c3
 idf.py build flash monitor
 ```
 
-Before flashing, set your own Wi-Fi network in `main/config.h` (`WIFI_SSID`, `WIFI_PASSWORD`, `WIFI_CHANNEL 0`). Do not commit real passwords. The project has been built with Wokwi's ESP-IDF build service; it has not yet been built with a local `idf.py` installation.
+Before flashing, set your own Wi-Fi network in `main/config.h` (`WIFI_SSID`, `WIFI_PASSWORD`, `WIFI_CHANNEL 0`). Do not commit real passwords.
 
 ## Run it in the simulator
 
