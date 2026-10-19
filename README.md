@@ -2,7 +2,7 @@
 
 A 2-layer, 60 × 38 mm board that measures the **voltage, current and power** of a 50 W / 12 V solar panel and reports them over **Wi-Fi**.
 
-> **Status:** designed and checked in KiCad 10 (ERC 0 errors, DRC 0 errors, 0 unconnected). **Not yet fabricated or tested on hardware.** Firmware is not part of this repository yet.
+> **Status:** designed and checked in KiCad 10 (ERC 0 errors, DRC 0 errors, 0 unconnected). **Not yet fabricated or tested on hardware.** Firmware (C, ESP-IDF) is written and tested in simulation: see [Firmware](#firmware).
 
 ![3D render of the board](docs/3d-angle.png)
 
@@ -43,12 +43,25 @@ The panel's current flows through the board, from **J2 (Solar IN)** to **J3 (Loa
 - **Boot and reset:** RESET (EN) with an RC start-up delay (10 kΩ + 1 µF), a BOOT button on IO9, and pull-ups on the strapping pins IO2/IO8/IO9.
 - **Manufacturing:** checked against JLCPCB's capabilities (0.2 mm clearance, 0.3 mm vias, 0.15 mm silkscreen line width).
 
+## Firmware
+
+C firmware for the ESP32-C3 (ESP-IDF + FreeRTOS), tested in the Wokwi simulator with a simulated INA226. Not yet run on the real board. Full details, code structure and test results: **[firmware/README.md](firmware/README.md)**.
+
+- Reads voltage, current and power from the INA226 over I²C every second (CAL = 2048 → 125 µA per bit)
+- Latched alarm on overcurrent (> 3.5 A), overvoltage (> 22 V) or a missing sensor; reset with the BOOT button
+- Re-writes the INA226 calibration automatically after the sensor stops answering and comes back
+- Publishes the readings as JSON over Wi-Fi + MQTT
+- 9 simulation tests (normal, faults, latch, reset, sensor removed, Wi-Fi): all pass
+
+![Firmware running in the Wokwi simulator](docs/firmware-wokwi-simulation.jpg)
+
 ## Repository contents
 
 ```
 hardware/     KiCad 10 project (schematic, PCB, project file)
 production/   JLCPCB-ready files: Gerbers + drill (zip), BOM, CPL (positions)
-docs/         Schematic PDF, 3D renders, layout preview
+firmware/     ESP32-C3 firmware (ESP-IDF, C) + Wokwi simulation files
+docs/         Schematic PDF, 3D renders, layout preview, firmware screenshot
 ```
 
 - **Schematic (PDF):** [docs/energy-monitor.pdf](docs/energy-monitor.pdf)
@@ -72,14 +85,14 @@ docs/         Schematic PDF, 3D renders, layout preview
 ## Notes
 
 - The 3D model of the USB-C connector is not included (it is not from the official KiCad library), so J1 appears without a body in the 3D viewer. The PCB and fabrication files are not affected.
-- Next steps: order the boards, write the ESP32-C3 firmware (read the INA226, publish over Wi-Fi), and test against a reference meter.
+- Next steps: order the boards, run the firmware on real hardware and compare the readings against a reference meter, and add a status LED (rev 0.3).
 
 ## Tools
 
-KiCad 10 · JLCPCB design rules · Fabrication Toolkit plugin
+KiCad 10 · JLCPCB design rules · Fabrication Toolkit plugin · ESP-IDF (C, FreeRTOS) · Wokwi simulator
 
 ## License
 
-Hardware design licensed under the **CERN Open Hardware Licence v2 – Permissive** ([CERN-OHL-P-2.0](LICENSE)).
+Hardware design licensed under the **CERN Open Hardware Licence v2 – Permissive** ([CERN-OHL-P-2.0](LICENSE)). Firmware licensed under **MIT** ([firmware/LICENSE](firmware/LICENSE)).
 
 © 2026 Basel Haijar

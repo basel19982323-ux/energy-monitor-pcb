@@ -1,0 +1,9 @@
+{
+  "name": "INA226 (sim)",
+  "author": "Basel Haijar",
+  "pins": ["VCC", "GND", "SDA", "SCL"],
+  "controls": [
+    { "id": "busVoltage", "label": "Panel voltage (V)", "type": "range", "min": 0, "max": 24, "step": 0.1 },
+    { "id": "current",    "label": "Current (A)",       "type": "range", "min": 0, "max": 4,  "step": 0.01 }
+  ]
+}
